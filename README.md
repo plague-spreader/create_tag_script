@@ -1,3 +1,4 @@
+
 # create_tag_script
 
 Create ID3 script for tagging mp3 easily
@@ -8,13 +9,18 @@ Create ID3 script for tagging mp3 easily
 
 ## Description
 
-The program supports multiple URL providers (only metal-archives for now) and
-will connect to the specified website (if the provider is available) to
-download the album info and create the ```tag_id3.sh``` script.
+The program supports album data retrieval from different websites (see next
+section) and will connect to the specified website (if the provider is
+available) to download the album info and create the ```tag_id3.sh``` script.
 
 Afterwards you should check that script and modify it according to your
 preferences and, most importantly, to write the actual filenames in your
 filesystem
+
+### Supported websites
+
+* metal-archives.com
+* discogs.com
 
 ## Dependencies
 
@@ -39,3 +45,4 @@ Will create the following file
     id3tag -a "Teitanblood" -A "Death" -y "March 13th, 2014" -s "Silence of the Great Martyrs" -t 7 -T 7 filename
 
 Then you need to modify each ```filename``` and year field accordingly
+
