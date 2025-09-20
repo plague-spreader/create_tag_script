@@ -30,6 +30,21 @@ from_metal_archives() {
     IFS= songs=(${songs_str})
 }
 
+from_discogs() {
+    local url=$1
+    local page_content=$(curl -sA 'curl' ${url} | xmllint --html\
+        --xpath '//div[@id="page"]' -)
+    local band_and_album=$(echo ${page_content} | xmllint\
+        --xpath '//h1[contains(@class, "MuiTypography-")]' -)
+    band_name=$(echo ${band_and_album} | xmllint --xpath '/h1/span/a/text()' -)
+    album_title=$(echo ${band_and_album} | xmllint --xpath '/h1/text()[2]' -)
+    album_year=$(echo ${page_content} | xmllint\
+        --xpath '//div[contains(@class, "body_")]//time/text()' -)
+    IFS= songs=($(echo ${page_content} | xmllint\
+        --xpath '//td[contains(@class, "trackTitle")]/span[1]//text()' - |\
+        tr '\n' ))
+}
+
 if [ $# -lt 1 ]; then
     >&2 usage
     exit 1
@@ -40,6 +55,9 @@ url=$1
 case ${url} in
     *metal-archives.com*)
         from_metal_archives ${url}
+        ;;
+    *discogs.com*)
+        from_discogs ${url}
         ;;
     *)
         echo Non-existent id3 tag provider
