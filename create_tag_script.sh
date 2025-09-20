@@ -16,15 +16,15 @@ from_metal_archives() {
 
     local album_content=$(curl -s ${url}| xmllint --html\
         --xpath '//div[@id="album_content"]' -)
-    album_title=$(echo $album_content | xmllint\
+    album_title=$(echo ${album_content} | xmllint\
         --xpath '//h1[contains(@class, "album_name")]/a/text()' -)
-    band_name=$(echo $album_content | xmllint\
+    band_name=$(echo ${album_content} | xmllint\
         --xpath '//h2[contains(@class, "band_name")]/a/text()' -)
-    album_year=$(echo $album_content | xmllint\
+    album_year=$(echo ${album_content} | xmllint\
         --xpath '//div[@id="album_info"]/dl[contains(@class, "float_left")]/dd[2]/text()' -)
-    local songs_str=$(echo $album_content | xmllint\
+    local songs_str=$(echo ${album_content} | xmllint\
         --xpath '//table[contains(@class, "table_lyrics")]//tr[contains(@class, "even") or contains(@class, "odd")]/td[2]/text()' - | tr '\n' )
-    songs_str=$(echo $songs_str | sed -Ee 's:\s+\s+::g')
+    songs_str=$(echo ${songs_str} | sed -Ee 's:\s+\s+::g')
     # ^ I need a consistent separator for iterating through songs
     # and I'm betting no song has an ASCII non-printable character
     IFS= songs=(${songs_str})
