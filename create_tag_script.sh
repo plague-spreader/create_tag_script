@@ -54,8 +54,12 @@ fi
 
 url=$1
 
-if echo $url | grep -q 'metal-archives\.com'; then
-    from_metal_archives ${url}
-else
-    echo Non-existent id3 tag provider
-fi
+case ${url} in
+    *metal-archives.com*)
+        from_metal_archives ${url}
+        ;;
+    *)
+        echo Non-existent id3 tag provider
+        exit 0
+        ;;
+esac
