@@ -16,35 +16,18 @@ from_metal_archives() {
 
     local album_content=$(curl -s ${url}| xmllint --html\
         --xpath '//div[@id="album_content"]' -)
-    local album_title=$(echo $album_content | xmllint\
+    album_title=$(echo $album_content | xmllint\
         --xpath '//h1[contains(@class, "album_name")]/a/text()' -)
-    local band_name=$(echo $album_content | xmllint\
+    band_name=$(echo $album_content | xmllint\
         --xpath '//h2[contains(@class, "band_name")]/a/text()' -)
-    local release_date=$(echo $album_content | xmllint\
+    album_year=$(echo $album_content | xmllint\
         --xpath '//div[@id="album_info"]/dl[contains(@class, "float_left")]/dd[2]/text()' -)
-    local songs=$(echo $album_content | xmllint\
-        --xpath '//table[contains(@class, "table_lyrics")]//tr[contains(@class, "even") or contains(@class, "odd")]/td[2]/text()' - |\
-        sed -Ee 's:^\s*::; s:\s*$::g')
+    local songs_str=$(echo $album_content | xmllint\
+        --xpath '//table[contains(@class, "table_lyrics")]//tr[contains(@class, "even") or contains(@class, "odd")]/td[2]/text()' - | tr '\n' )
+    songs_str=$(echo $songs_str | sed -Ee 's:\s+\s+::g')
     # ^ I need a consistent separator for iterating through songs
     # and I'm betting no song has an ASCII non-printable character
-    IFS=
-    local songs_arr=(${songs})
-    local num_songs=${#songs_arr[@]}
-    echo '#!/usr/bin/env bash' > tag_id3.sh
-    echo >> tag_id3.sh
-    local i=1
-    for song in $songs; do
-        IFS=$' \t\n'
-        echo id3tag -a \"${band_name}\" -A \"${album_title}\"\
-            -y \"${release_date}\" -s \"$(echo ${song} | xargs)\" -t ${i}\
-            -T ${num_songs} filename >> tag_id3.sh
-        let i++
-        IFS=
-    done
-    IFS=$' \t\n'
-    chmod +x tag_id3.sh
-
-    echo Review tag_id3.sh and then execute it to tag your songs
+    IFS= songs=(${songs_str})
 }
 
 if [ $# -lt 1 ]; then
@@ -63,3 +46,14 @@ case ${url} in
         exit 0
         ;;
 esac
+
+echo '#!/usr/bin/env bash' > tag_id3.sh
+echo >> tag_id3.sh
+for ((i = 0; i < ${#songs[@]};)); do
+    echo id3tag -a \"${band_name}\" -A \"${album_title}\"\
+        -y \"${album_year}\" -s \"${songs[$((i++))]}\" -t ${i} -T ${#songs[@]}\
+            filename >> tag_id3.sh
+done
+chmod +x tag_id3.sh
+
+echo Review tag_id3.sh and then execute it to tag your songs
