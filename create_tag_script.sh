@@ -60,7 +60,7 @@ case ${url} in
         from_discogs ${url}
         ;;
     *)
-        echo Non-existent id3 tag provider
+        echo Unsupported website
         exit 0
         ;;
 esac
