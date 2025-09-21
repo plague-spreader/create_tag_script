@@ -18,7 +18,7 @@ preferences and, most importantly, to write the actual filenames in your
 filesystem
 
 Currently this program does not support HTML entities unescaping; from one side
-I can really easily implement it by adding Python as a dependency but then I
+I can really easily implement it by adding Python as a dependency but then
 wouldn't it be better to rewrite the whole thing in Python? Maybe I'm
 overthinking this...
 
